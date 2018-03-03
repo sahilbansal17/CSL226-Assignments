@@ -20,5 +20,45 @@ struct
             implode(normalizeCharList(ls)) (* find the normalized Char list and then combine using implode function *)
         end
     fun len(s) =
-        size(normalize(s)); (* first normalize and then return the size of the string *)
+        size(s); (* return the size of the string *)
+    fun fromString(s) =
+        normalize(s) (* normalize the string to return BIGNAT *)
+    fun toString(s) =
+        s (* no computation required, BIGNAT is already string type *)
+    (* define ++ as infix operator *)
+    infix ++;
+    fun op ++ (a, b) =
+        let
+            (* normalize the bignats *)
+            val na = normalize(a);
+            val nb = normalize(b);
+            (* val sa = len(a);
+            val sb = len(b); *)
+
+            (* explode to list form in reverse order *)
+            val la = explode(String.rev(na));
+            val lb = explode(String.rev(nb));
+
+            val res = []; (* resulting char list *)
+
+            fun add([], [], 1, res) = #"1"::res
+                | add([], [], 0, res) = res
+                | add([], bh::bt, carry, res) =
+                    if(ord(bh) + carry >= 58) then add([], bt, 1, chr(ord(bh) + carry - 10)::res)
+                    else
+                    add([], bt, 0, chr(ord(bh) + carry - 0)::res)
+                | add(ah::at, [], carry, res) =
+                    if(ord(ah) + carry >= 58) then add(at, [], 1, chr(ord(ah) + carry - 10)::res)
+                    else
+                    add([], at, 0, chr(ord(ah) + carry - 0)::res)
+                | add(ah::at, bh::bt, carry, res) =
+                    if(ord(ah) + ord(bh) + carry >= 106) then add(at, bt, 1, chr(ord(ah) + ord(bh) + carry - 106 + 48)::res)
+                    else
+                    add(bt, at, 0, chr(ord(ah) + ord(bh) + carry - 96 + 48)::res)
+            val explodedRes = add(la, lb, 0, res);
+        in
+            implode(explodedRes)
+        end
 end
+(* define infix operators *)
+infix ++;

@@ -8,10 +8,10 @@ sig
     val zero : bignat
     val normalize : bignat -> bignat
     val len : bignat -> int
-    (* val fromString : string -> bignat
-    val toString : bignat -> string *)
-    (* val ++ : bignat * bignat -> bignat
-    val -- : bignat * bignat -> bignat
+    val fromString : string -> bignat
+    val toString : bignat -> string
+    val ++ : bignat * bignat -> bignat
+    (* val -- : bignat * bignat -> bignat
     val ** : bignat * bignat -> bignat
     val %% : bignat * bignat -> bignat * bignat
     val quo : bignat * bignat -> bignat
