@@ -18,29 +18,29 @@ sig
     (* val pred : bigint -> bigint *)
 
     (* val ++ : bigint * bigint -> bigint *)
-    (* val ** : bigint * bigint -> bigint *)
     (* val -- : bigint * bigint -> bigint *)
+    (* val ** : bigint * bigint -> bigint *)
     (* val %% : bigint * bigint -> bigint * bigint *)
     (* val div : bigint * bigint -> bigint *)
     (* val mod : bigint * bigint -> bigint *)
     (* val quo : bigint * bigint -> bigint *)
     (* val rem : bigint * bigint -> bigint *)
 
-    (* val min : bigint * bigint -> bigint *)
-    (* val max : bigint * bigint -> bigint *)
-    (* val sameSign : bigint * bigint -> bool *)
-    (* val << : bigint * bigint -> bool *)
-    (* val <<= : bigint * bigint -> bool *)
-    (* val >> : bigint * bigint -> bool *)
-    (* val >>= : bigint * bigint -> bool *)
-    (* val == : bigint * bigint -> bool *)
-    (* val compare : bigint * bigint -> order *)
-    (* val lenCompare : bigint * bigint -> order *)
-    (* val lenLt : bigint * bigint -> bool *)
-    (* val lenLeq : bigint * bigint -> bool *)
-    (* val lenGt : bigint * bigint -> bool *)
-    (* val lenGeq : bigint * bigint -> bool *)
-    (* val lenEq : bigint * bigint -> bool *)
+    val min : bigint * bigint -> bigint
+    val max : bigint * bigint -> bigint
+    val sameSign : bigint * bigint -> bool
+    val << : bigint * bigint -> bool
+    val <<= : bigint * bigint -> bool
+    val >> : bigint * bigint -> bool
+    val >>= : bigint * bigint -> bool
+    val == : bigint * bigint -> bool
+    val compare : bigint * bigint -> order
+    val lenCompare : bigint * bigint -> order
+    val lenLt : bigint * bigint -> bool
+    val lenLeq : bigint * bigint -> bool
+    val lenGt : bigint * bigint -> bool
+    val lenGeq : bigint * bigint -> bool
+    val lenEq : bigint * bigint -> bool
 
 end  =
 struct
@@ -98,10 +98,109 @@ struct
         in
             if(sgn = 1) then last_index
             else 1+last_index
-        end 
+        end
+
+    fun sameSign(a, b) =
+        sign(a) = sign(b)
+    fun lenCompare(a, b) = Int.compare(len(a), len(b))
+    fun lenLt(a, b) = len(a) < len(b);
+    fun lenLeq (a, b) = len(a) <= len(b);
+    fun lenGt (a, b) = len(a) > len(b);
+    fun lenGeq (a, b) = len(a) >= len(b);
+    fun lenEq (a, b) = len(a) = len(b);
+
+    infix << ;
+    fun op << (a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.<<(a, b)
+            else if(s1 = 1 andalso s2 = 0) then true
+            else if(s1 = 0 andalso s2 = 1) then false
+            else (
+                (* both negative *)
+                Bignat.<<(v2, v1)
+                )
+        end
+    infix <<=;
+    fun op <<= (a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.<<=(a, b)
+            else if(s1 = 1 andalso s2 = 0) then true
+            else if(s1 = 0 andalso s2 = 1) then false
+            else (
+                (* both negative *)
+                Bignat.<<(v2, v1)
+                )
+        end
+    infix >>;
+    fun op >> (a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.>>(a, b)
+            else if(s1 = 1 andalso s2 = 0) then false
+            else if(s1 = 0 andalso s2 = 1) then true
+            else (
+                (* both negative *)
+                Bignat.>>(v2, v1)
+                )
+        end
+    infix >>=;
+    fun op >>= (a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.>>=(a, b)
+            else if(s1 = 1 andalso s2 = 0) then false
+            else if(s1 = 0 andalso s2 = 1) then true
+            else (
+                (* both negative *)
+                Bignat.>>=(v2, v1)
+                )
+        end
+    infix ==;
+    fun op == (a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.==(a, b)
+            else if(s1 = 1 andalso s2 = 0) then false
+            else if(s1 = 0 andalso s2 = 1) then false
+            else (
+                (* both negative *)
+                Bignat.==(v1, v2)
+                )
+        end
+    fun compare(a, b) =
+    if(a << b) then LESS
+    else if(a == b) then EQUAL
+    else GREATER (* compares a with b and returns the order *)
+
+    fun min(a, b) =
+        if(a >> b) then normalize(b) else normalize(a);
+    fun max(a, b) =
+        if(a >> b) then normalize(a) else normalize(b);
+
 end
 
 structure bigint = BigInt(Bignat); (* passing Bignat structure as the argument *)
 open bigint;
-infix ~~;
 (* use "BIGINT_functor.sml"; *)

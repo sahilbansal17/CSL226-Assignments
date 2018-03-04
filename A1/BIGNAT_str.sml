@@ -66,7 +66,6 @@ struct
     fun lenGeq (a, b) = len(a) >= len(b);
     fun lenEq (a, b) = len(a) = len(b);
 
-    fun compare(a, b) = String.compare(normalize(a), normalize(b)) ; (* compares a with b and returns the order *)
     infix << ;
     fun op << (a, b) =
         if(lenEq(a, b)) then normalize(a) < normalize(b)
@@ -96,6 +95,11 @@ struct
         if(lenEq(a,b)) then normalize(a) = normalize(b) (* check for equality in their normal form *)
         else false
 
+    fun compare(a, b) =
+    if(a << b) then LESS
+    else if(a == b) then EQUAL
+    else GREATER (* compares a with b and returns the order *)
+    
     infix --;
     fun op -- (a,b) =
         let
