@@ -20,7 +20,7 @@ struct
             implode(normalizeCharList(ls)) (* find the normalized Char list and then combine using implode function *)
         end
     fun len(s) =
-        size(s); (* return the size of the string *)
+        size(normalize(s)); (* return the size of the string *)
     fun fromString(s) =
         normalize(s) (* normalize the string to return BIGNAT *)
     fun toString(s) =
@@ -59,6 +59,39 @@ struct
         in
             implode(explodedRes)
         end
+    (* fun op -- (a,b) =
+        let
+
+        in
+
+        end *)
+        fun succ(a) = a ++ "1";
+
+        fun lenCompare(a, b) = Int.compare(len(a), len(b));
+        fun lenLt (a, b) = len(a) < len(b);
+        fun lenLeq (a, b) = len(a) <= len(b);
+        fun lenGt (a, b) = len(a) > len(b);
+        fun lenGeq (a, b) = len(a) >= len(b);
+        fun lenEq (a, b) = len(a) = len(b);
+
+        fun compare(a, b) = String.compare(normalize(a), normalize(b)) ; (* compares a with b and returns the order *)
+        fun op << (a, b) = normalize(a) < normalize(b);
+        fun op <<= (a, b) = normalize(a) <= normalize(b);
+        fun op >> (a, b) = normalize(a) > normalize(b);
+        fun op >>= (a, b) = normalize(a) >= normalize(b);
+        fun op == (a, b) = normalize(a) = normalize(b); (* check for equality in their normal form *)
+
+        infix >>;
+        fun min(a, b) = if(a >> b) then normalize(b) else normalize(a);
+        fun max(a, b) = if(a >> b) then normalize(a) else normalize(b);
 end
+open Bignat;
 (* define infix operators *)
 infix ++;
+infix --;
+infix <<;
+infix <<=;
+infix >>;
+infix >>=;
+infix ==;
+(* use "BIGNAT_str.sml"; *)
