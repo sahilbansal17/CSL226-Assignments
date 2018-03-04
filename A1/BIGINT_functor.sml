@@ -14,11 +14,11 @@ sig
     val sign : bigint -> int
     val ~~ : bigint -> bigint
     val abs : bigint -> bigint
-    (* val succ : bigint -> bigint *)
-    (* val pred : bigint -> bigint *)
+    val succ : bigint -> bigint
+    val pred : bigint -> bigint
 
-    (* val ++ : bigint * bigint -> bigint *)
-    (* val -- : bigint * bigint -> bigint *)
+    val ++ : bigint * bigint -> bigint
+    val -- : bigint * bigint -> bigint
     (* val ** : bigint * bigint -> bigint *)
     (* val %% : bigint * bigint -> bigint * bigint *)
     (* val div : bigint * bigint -> bigint *)
@@ -66,9 +66,6 @@ struct
             if(firstChar = #"~") then "-"^substring(bigString, 1, last_index)
             else bigString
         end
-    (* infix ++;
-    fun op ++(a, b) =
-        ; *)
     fun int(a) =
         Int.fromString(a);
     fun toString(a) =
@@ -199,8 +196,61 @@ struct
     fun max(a, b) =
         if(a >> b) then normalize(a) else normalize(b);
 
+    infix ++;
+    fun op ++(a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then Bignat.++(a, b)
+            else if(s1 = 1 andalso s2 = 1) then "-"^(Bignat.++(v1, v2))
+            else
+            (
+                (* one number +ve and other -ve *)
+                (* case 1 : +ve no is larger *)
+                if(Bignat.>>=(v1, v2) andalso s1 = 0) then Bignat.--(v1, v2)
+                else if (Bignat.>>=(v2, v1) andalso s2 = 0) then Bignat.--(v2, v1)
+                (* case 2 : -ve no is larger *)
+                else if (Bignat.>>=(v1, v2) andalso s1 = 1) then "-"^Bignat.--(v1, v2)
+                else "-"^Bignat.--(v2, v1)
+            )
+        end
+    fun succ(a) = a ++ "1";
+    fun op --(a, b) =
+        let
+            val s1 = sign(a);
+            val s2 = sign(b);
+            val v1 = abs(a);
+            val v2 = abs(b);
+        in
+            if(s1 = 0 andalso s2 = 0) then (
+                (* case 1: v1 >= v2 *)
+                if(Bignat.>>=(v1, v2)) then Bignat.--(v1, v2)
+                (* case 2: v1 < v2, so v1-v2 is negative *)
+                else "-"^Bignat.--(v2, v1)
+                )
+            else if(s1 = 1 andalso s2 = 1) then (
+                (* case 1: v1 >= v2 *)
+                if(Bignat.>>=(v1, v2)) then "-"^Bignat.--(v1, v2)
+                (* case 2: v1 < v2, so result is +ve *)
+                else Bignat.--(v2, v1)
+                )
+            else
+            (
+                (* one number +ve and other -ve *)
+                (* case 1 : 1st number is +ve *)
+                if(s1 = 0) then
+                Bignat.++(v1, v2)
+                (* case 2 : 2nd number is +ve *)
+                else "-"^Bignat.++(v1, v2)
+            )
+        end
+    fun pred(a) = a -- "1";
 end
 
 structure bigint = BigInt(Bignat); (* passing Bignat structure as the argument *)
 open bigint;
+infix ~~;
 (* use "BIGINT_functor.sml"; *)
