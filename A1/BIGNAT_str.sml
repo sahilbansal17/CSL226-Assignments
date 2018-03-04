@@ -54,34 +54,80 @@ struct
                 | add(ah::at, bh::bt, carry, res) =
                     if(ord(ah) + ord(bh) + carry >= 106) then add(at, bt, 1, chr(ord(ah) + ord(bh) + carry - 106 + 48)::res)
                     else
-                    add(bt, at, 0, chr(ord(ah) + ord(bh) + carry - 96 + 48)::res)
+                    add(at, bt, 0, chr(ord(ah) + ord(bh) + carry - 96 + 48)::res)
             val explodedRes = add(la, lb, 0, res);
         in
             implode(explodedRes)
         end
-    (* fun op -- (a,b) =
+    fun lenCompare(a, b) = Int.compare(len(a), len(b));
+    fun lenLt (a, b) = len(a) < len(b);
+    fun lenLeq (a, b) = len(a) <= len(b);
+    fun lenGt (a, b) = len(a) > len(b);
+    fun lenGeq (a, b) = len(a) >= len(b);
+    fun lenEq (a, b) = len(a) = len(b);
+
+    fun compare(a, b) = String.compare(normalize(a), normalize(b)) ; (* compares a with b and returns the order *)
+    infix << ;
+    fun op << (a, b) =
+        if(lenEq(a, b)) then normalize(a) < normalize(b)
+        else if(lenLt(a, b)) then true
+        else false
+
+    infix <<=;
+    fun op <<= (a, b) =
+        if(lenEq(a,b)) then normalize(a) <= normalize(b)
+        else if(lenLt(a,b)) then true
+        else false
+
+    infix >>;
+    fun op >> (a, b) =
+        if(lenEq(a,b)) then normalize(a) > normalize(b)
+        else if(lenGt(a,b)) then true
+        else false
+
+    infix >>=;
+    fun op >>= (a, b) =
+        if(lenEq(a,b)) then normalize(a) >= normalize(b)
+        else if(lenGt(a,b)) then true
+        else false
+
+    infix ==;
+    fun op == (a, b) =
+        if(lenEq(a,b)) then normalize(a) = normalize(b) (* check for equality in their normal form *)
+        else false
+
+    infix --;
+    fun op -- (a,b) =
         let
+            val na = normalize(a);
+            val nb = normalize(b);
 
+            val la = explode(String.rev(na));
+            val lb = explode(String.rev(nb));
+
+            val res = [];
+
+            fun subt([], [], 0, res) = res (* no borrow possible in this case *)
+                (* NOT POSSIBLE IN NATURAL NUMBER SUBTRACTION *)
+                | subt([], bh::bt, borrow, res) = raise underflow
+                | subt([], [], 1, res) = raise underflow
+                | subt(ah::at, [], borrow, res) =
+                    if(ord(ah) - borrow >= 0) then subt(at, [], 0, chr(ord(ah) - borrow)::res)
+                    else
+                    raise underflow
+                | subt(ah::at, bh::bt, borrow, res) =
+                    if(ord(ah) - ord(bh) - borrow >= 0) then subt(at, bt, 0, chr(ord(ah) - ord(bh) - borrow + 48)::res)
+                    else
+                    subt(at, bt, 1, chr(ord(ah) - ord(bh) - borrow + 10 + 48)::res)
+            val explodedRes = subt(la, lb, 0, res);
         in
+            if(a << b) then raise underflow (* result can't be negative *)
+            else if(a == b) then zero
+            else normalize(implode(explodedRes))
+        end
 
-        end *)
         fun succ(a) = a ++ "1";
-
-        fun lenCompare(a, b) = Int.compare(len(a), len(b));
-        fun lenLt (a, b) = len(a) < len(b);
-        fun lenLeq (a, b) = len(a) <= len(b);
-        fun lenGt (a, b) = len(a) > len(b);
-        fun lenGeq (a, b) = len(a) >= len(b);
-        fun lenEq (a, b) = len(a) = len(b);
-
-        fun compare(a, b) = String.compare(normalize(a), normalize(b)) ; (* compares a with b and returns the order *)
-        fun op << (a, b) = normalize(a) < normalize(b);
-        fun op <<= (a, b) = normalize(a) <= normalize(b);
-        fun op >> (a, b) = normalize(a) > normalize(b);
-        fun op >>= (a, b) = normalize(a) >= normalize(b);
-        fun op == (a, b) = normalize(a) = normalize(b); (* check for equality in their normal form *)
-
-        infix >>;
+        fun pred(a) = a -- "1";
         fun min(a, b) = if(a >> b) then normalize(b) else normalize(a);
         fun max(a, b) = if(a >> b) then normalize(a) else normalize(b);
 end

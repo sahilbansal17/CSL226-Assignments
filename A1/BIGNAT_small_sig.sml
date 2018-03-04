@@ -11,13 +11,13 @@ sig
     val fromString : string -> bignat
     val toString : bignat -> string
     val ++ : bignat * bignat -> bignat
-    (* val -- : bignat * bignat -> bignat
-    val ** : bignat * bignat -> bignat *)
+    val -- : bignat * bignat -> bignat
+    (* val ** : bignat * bignat -> bignat *)
     (*val %% : bignat * bignat -> bignat * bignat
     val quo : bignat * bignat -> bignat
     val rem : bignat * bignat -> bignat *)
     val succ : bignat -> bignat
-    (* val pred : bignat -> bignat *)
+    val pred : bignat -> bignat
     val min : bignat * bignat -> bignat
     val max : bignat * bignat -> bignat
     val compare : bignat * bignat -> order
