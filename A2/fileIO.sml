@@ -62,7 +62,6 @@ fun bite (filename:string) =
 	     of ("", f')    => (TextIO.StreamIO.closeIn f'; accum)
 	      | (chunk, f') => loop (chunk::accum, f')
             (* esac *)
-	
     in  rev(loop ([], f))
     end
 
@@ -97,8 +96,8 @@ fun lick (filename:string) =
     let val f = TextIO.openIn filename
         fun loop (accum: string list) =
             case (TextIO.inputLine f) of 
-		"" => accum
-              | line => loop (line::accum)
+		NONE => accum
+              | SOME line => loop (line::accum)
             (* esac *)
         val lines =   rev(loop [])
     in TextIO.closeIn f; lines
