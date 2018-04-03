@@ -4,13 +4,13 @@ struct
 (* for creating lexer and parser *)
 structure mdtabLrVals = mdtabLrValsFun(structure Token = LrParser.Token); 
 structure mdtabLex = mdtabLexFun(structure Tokens = mdtabLrVals.Tokens);
-structure mdtabParser = Join(
-    structure LrParser = LrParser 
+structure mdtabParser = Join( 
     structure ParserData = mdtabLrVals.ParserData
     structure Lex = mdtabLex
-    ) 
+    structure LrParser = LrParser
+    );
 
-fun parse_stream stream = 
+(* fun parse_stream stream = 
     let val lexer = mdtabParser.makeLexer (fn i => TextIO.inputN(stream, i))
         val (ast, _) = mdtabParser.parse(0, lexer, fn(_,_,_) => print "error\n", ())
     in 
@@ -18,14 +18,14 @@ fun parse_stream stream =
     end 
 
 fun parse_file f = 
-    let val s = TextIO.opneIn f
+    let val s = TextIO.openIn f
         val r = parse_stream s 
     in 
         (r before TextIO.closeIn s; print("Success!\n"))
     end 
     handle _ => print("Fail!\n")
     
-fun parse_string s = (parse_stream (TextIO.openString s))
+fun parse_string s = (parse_stream (TextIO.openString s)) *)
 
 fun main () =
     let fun usage () = print "Markdown+Tables for CSL226 Assignment 2. \nUsage:markdown \"filename\"\n"
