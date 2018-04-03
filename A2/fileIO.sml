@@ -67,7 +67,7 @@ fun bite (filename:string) =
 
 
 
-(* Reading by lines list of strings 
+(* Reading by lines list of strings *) 
 fun lick (filename:string) =
     let val f = TextIO.getInstream(TextIO.openIn filename)
 	fun loop (accum: string list, f) =
@@ -78,7 +78,7 @@ fun lick (filename:string) =
     in  rev(loop ([], f))
     end
 
-
+(*
 This function which is functional style yields the following error
 	
 /home/sak/sml/programs/fileio/fileIO.sml:74.6-76.52 Error: case object and rules don't agree [tycon mismatch]
@@ -90,7 +90,7 @@ This function which is functional style yields the following error
        | NONE => (TextIO.StreamIO.closeIn f; accum))
 
 So we do the imperative style
-*)
+
 
 fun lick (filename:string) =
     let val f = TextIO.openIn filename
@@ -103,7 +103,7 @@ fun lick (filename:string) =
     in TextIO.closeIn f; lines
     end
 
-
+*)
 
 
 (* The perl function chomp *)

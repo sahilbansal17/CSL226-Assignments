@@ -1,13 +1,13 @@
-datatype lexresult = HTML | EOF
+structure T = Tokens
+ 
+type lexresult = Tokens.token
+type pos = int 
 
-val linenum = ref 1
-val error = fn x => output(stdOut,x ^ "\n")
-val eof = fn () => EOF
-val file = openOut "output.html"
+val error = fn x => TextIO.output(TextIO.stdOut,x ^ "\n")
+val eof = (fn () => Tokens.EOF)
 
 %%
-
-%structure mdTabLex
+%posarg 
 
 tagName = [A-Za-z]+;
 ws = [\ \t];
@@ -20,13 +20,13 @@ ws = [\ \t];
 
 %%
 
-\n                          => ((!linenum)=(!linenum)+1; lex());
-{ws}+                       => (lex());
-<INITIAL>"<"                => (YYBEGIN START_TAG_BEG; output(file, yytext); lex());
-<START_TAG_BEG>{tagName}    => (YYBEGIN START_TAG_END; output(file, yytext); lex());
-<START_TAG_END>">"          => (YYBEGIN HTML_CONTENT; output(file, yytext); lex());
-<HTML_CONTENT>[^\<]*        => (YYBEGIN END_TAG_BEG; output(file, yytext); lex());
-<END_TAG_BEG>"<"{ws}*"/"    => (YYBEGIN END_TAG_END; output(file, "</"); lex());
-<END_TAG_END>{tagName}      => (output(file, yytext); lex());
-<END_TAG_END>">"            => (YYBEGIN INITIAL; output(file, ">"); closeOut(file); HTML);
-.                           => (error("ignoring bad character:"^yytext); EOF);
+\n                          => (continue());
+{ws}+                       => (continue());
+<INITIAL>"<"                => (YYBEGIN START_TAG_BEG; T.START_TAG_BEG(yypos));
+<START_TAG_BEG>{tagName}    => (YYBEGIN START_TAG_END; T.START_TAG_NAME(yytext, yypos));
+<START_TAG_END>">"          => (YYBEGIN HTML_CONTENT; T.START_TAG_END(yypos));
+<HTML_CONTENT>[^\<]*        => (YYBEGIN END_TAG_BEG; T.HTML_CONTENT(yytext, yypos));
+<END_TAG_BEG>"<"{ws}*"/"    => (YYBEGIN END_TAG_END; T.END_TAG_BEG(yypos));
+<END_TAG_END>{tagName}      => (T.END_TAG_NAME(yytext, yypos));
+<END_TAG_END>">"            => (YYBEGIN INITIAL; T.END_TAG_END(yypos));
+.                           => (error("ignoring bad character:"^yytext); T.EOF);

@@ -3,25 +3,20 @@
 To run the program :
 1. ml-lex mdtab.lex 
 2. use "test.sml"
-3. lexer();
-4. Now, use the following as input, gives the same output as in output.html
-<    body    > Hello world  <    /     body    >  
-
+3. markdown "fileName"
 *)
 
-open TextIO;
+(* Tokens *)
+use "tokens.sml";
+
+(* Lexer *)
 use "mdtab.lex.sml";
-(* open mdTabLex; *)
 
-(* 
+(* Main *)
+use "main.sml";
 
-need to make some fixes to take input from a file 
+(* parse function accessible through markdown variable *)
+val markdown = Main.parse;
 
-val inputFile = openIn("test.txt");
-val l = inputLine(inputFile);
-closeIn(inputFile);
-val lexer = makeLexer(fn n => valOf(l)); 
-
-*)
-
-val lexer = mdTabLex.makeLexer(fn n => valOf(inputLine(stdIn)));
+(* Display usage instructions *)
+Main.main();
