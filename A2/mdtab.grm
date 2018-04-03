@@ -1,0 +1,62 @@
+%%
+%eop EOF
+%name mdtab  
+
+%term
+      START_TAG_BEG of int
+    | TAG_NAME of string*int 
+    | TAG_END of int 
+    | HTML_CONTENT of string*int
+    | END_TAG_BEG of int
+    | ITALICS of int 
+    | BOLD of int 
+    | UNDERLINE of int
+    | H1 of int 
+    | H2 of int 
+    | H3 of int 
+    | H4 of int 
+    | H5 of int 
+    | H6 of int 
+    | EOF
+
+%nonterm
+	    markdown
+    |   html 
+    |   heading  
+    |   style   
+    |   bold  
+    |   italics   
+    |   underline   
+    |   h1   
+    |   h2   
+    |   h3   
+    |   h4  
+    |   h5  
+    |   h6    
+%start markdown 
+%pos INT
+
+%%
+
+markdown :      html markdown 
+            |   heading markdown 
+            |   style markdown 
+            
+html :          START_TAG_BEG TAG_NAME TAG_END HTML_CONTENT END_TAG_BEG TAG_END
+style :         bold | italics | underline 
+bold :          BOLD HTML_CONTENT BOLD 
+italics :       ITALICS HTML_CONTENT ITALICS 
+underline :     UNDERLINE HTML_CONTENT UNDERLINE 
+heading :       h1 
+            |   h2
+            |   h3
+            |   h4  
+            |   h5  
+            |   h6    
+
+h1 :        H1 HTML_CONTENT                 
+h2 :        H2 HTML_CONTENT                 
+h3 :        H3 HTML_CONTENT                 
+h4 :        H4 HTML_CONTENT                 
+h5 :        H5 HTML_CONTENT                 
+h6 :        H6 HTML_CONTENT                 
