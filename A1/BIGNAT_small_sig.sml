@@ -12,7 +12,7 @@ sig
     val toString : bignat -> string
     val ++ : bignat * bignat -> bignat
     val -- : bignat * bignat -> bignat
-    (* val ** : bignat * bignat -> bignat *)
+    val ** : bignat * bignat -> bignat
     (*val %% : bignat * bignat -> bignat * bignat
     val quo : bignat * bignat -> bignat
     val rem : bignat * bignat -> bignat *)

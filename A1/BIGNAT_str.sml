@@ -99,7 +99,7 @@ struct
     if(a << b) then LESS
     else if(a == b) then EQUAL
     else GREATER (* compares a with b and returns the order *)
-    
+
     infix --;
     fun op -- (a,b) =
         let
@@ -134,6 +134,39 @@ struct
         fun pred(a) = a -- "1";
         fun min(a, b) = if(a >> b) then normalize(b) else normalize(a);
         fun max(a, b) = if(a >> b) then normalize(a) else normalize(b);
+        
+    infix **;
+    fun op ** (a, b) = 
+        let 
+            val na = normalize(a);
+            val nb = normalize(b);
+            val la = explode(String.rev(na));
+            val lb = explode(String.rev(nb));
+            
+            fun multiplySingleDigit(s : int, [], res, 0) = res 
+            |   multiplySingleDigit(s : int, [], res, carry) = chr(carry + 48) :: res 
+            |   multiplySingleDigit(s : int, la_h :: la_t, res, carry) = 
+                let 
+                    val laInt = ord(la_h) - 48;
+                    val prod = carry + s * laInt;
+                    val div10 = prod div 10;
+                    val res_h = chr(prod - 10*div10 + 48);
+                in
+                    multiplySingleDigit(s, la_t, res_h :: res, div10)
+                end
+        in 
+            fromString(implode(multiplySingleDigit(ord(hd(lb)) - 48, la, [], 0)))
+        end
+    (*
+        Test: 
+            val a = "123" : bignat;
+            val b = "24" : bignat;
+            a ** b;
+            
+            RESULT: The product of 4 with 123.
+            
+            val it = "492" : bignat 
+    *)
 end
 open Bignat;
 (* define infix operators *)
@@ -144,4 +177,5 @@ infix <<=;
 infix >>;
 infix >>=;
 infix ==;
+infix **;
 (* use "BIGNAT_str.sml"; *)
