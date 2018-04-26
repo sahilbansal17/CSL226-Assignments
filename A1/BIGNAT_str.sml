@@ -154,8 +154,21 @@ struct
                 in
                     multiplySingleDigit(s, la_t, res_h :: res, div10)
                 end
+            
+            fun appendZeroes(0) = ""
+            |   appendZeroes(numZero) = 
+                "0"^appendZeroes(numZero - 1)
+            
+            fun multiplyAll(la, [], res, _) = res
+            |   multiplyAll(la, lb_h :: lb_t, res, numZero) = 
+                let 
+                    val mulSingle = implode(multiplySingleDigit(ord(lb_h) - 48, la, [], 0));
+                    val toAdd = mulSingle ^ appendZeroes(numZero);
+                in 
+                    multiplyAll(la, lb_t, res ++ toAdd, numZero + 1)
+                end
         in 
-            fromString(implode(multiplySingleDigit(ord(hd(lb)) - 48, la, [], 0)))
+            normalize(fromString(multiplyAll(la, lb, "0", 0)))
         end
     (*
         Test: 
@@ -163,9 +176,9 @@ struct
             val b = "24" : bignat;
             a ** b;
             
-            RESULT: The product of 4 with 123.
+            RESULT: The product of 24 with 123.
             
-            val it = "492" : bignat 
+            val it = "2952" : bignat 
     *)
 end
 open Bignat;
