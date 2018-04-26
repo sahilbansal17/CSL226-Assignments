@@ -116,9 +116,9 @@ struct
                 | subt([], bh::bt, borrow, res) = raise underflow
                 | subt([], [], 1, res) = raise underflow
                 | subt(ah::at, [], borrow, res) =
-                    if(ord(ah) - borrow >= 0) then subt(at, [], 0, chr(ord(ah) - borrow)::res)
+                    if(ord(ah) - 48 - borrow >= 0) then subt(at, [], 0, chr(ord(ah) - borrow)::res)
                     else
-                    raise underflow
+                    subt(at, [], 1, chr(ord(ah) - borrow + 10) :: res)
                 | subt(ah::at, bh::bt, borrow, res) =
                     if(ord(ah) - ord(bh) - borrow >= 0) then subt(at, bt, 0, chr(ord(ah) - ord(bh) - borrow + 48)::res)
                     else
@@ -180,6 +180,15 @@ struct
             
             val it = "2952" : bignat 
     *)
+    
+    fun fact(n : bignat) = 
+        let 
+            fun fact_helper("0", res) = res
+            |   fact_helper(n, res) =  
+                fact_helper(n -- "1", n ** res)
+        in 
+            fact_helper(n, "1")
+        end
 end
 open Bignat;
 (* define infix operators *)

@@ -32,4 +32,5 @@ sig
     val lenGt : bignat * bignat -> bool
     val lenGeq : bignat * bignat -> bool
     val lenEq : bignat * bignat -> bool
+    val fact : bignat -> bignat
 end
